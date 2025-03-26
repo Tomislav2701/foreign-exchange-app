@@ -19,7 +19,7 @@ public class ExchangeRateService {
     public BigDecimal getExchangeRate(String fromCurrency, String toCurrency) {
         String apiKey = dotenv.get("EXCHANGE_API_KEY");
         String url = String.format(
-            "https://api.exchangerate.host/convert?from=%s&to=%s&api_key=%s",
+            "https://api.exchangerate.host/convert?from=%s&to=%s&amount=1&access_key=%s",
             fromCurrency, toCurrency, apiKey
         );
         ExchangeRateResponse response = restTemplate.getForObject(url, ExchangeRateResponse.class);
