@@ -26,11 +26,10 @@ public class RateLimitingFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-
+                
         String ip = request.getRemoteAddr();
         Bucket bucket = buckets.computeIfAbsent(ip, this::newBucket);
-
-
+    
         if (bucket.tryConsume(1)) {
             filterChain.doFilter(request, response);
         } else {
@@ -40,7 +39,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     }
 
     private Bucket newBucket(String key) {
-        Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
+        Bandwidth limit = Bandwidth.classic(15, Refill.greedy(15, Duration.ofMinutes(1)));
         return Bucket.builder().addLimit(limit).build();
     }
 }
