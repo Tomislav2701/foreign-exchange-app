@@ -1,6 +1,7 @@
 package com.tomi.fexapp.service;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +17,7 @@ public class ExchangeRateService {
         this.dotenv = dotenv;
     }
 
+    @Cacheable(value = "exchangeRates", key = "#fromCurrency + '-' + #toCurrency")
     public BigDecimal getExchangeRate(String fromCurrency, String toCurrency) {
         String apiKey = dotenv.get("EXCHANGE_API_KEY");
         String url = String.format(
