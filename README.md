@@ -1,6 +1,6 @@
 # FEXApp - Currency Conversion API
 
-FXApp is a Spring Boot application providing endpoints for currency exchange rate lookup, currency conversion, and transaction history. It includes features such as caching, rate limiting, interactive API documentation (Swagger), and is containerized with Docker.
+FEXApp is a Spring Boot application providing endpoints for currency exchange rate lookup, currency conversion, and transaction history. It includes features such as caching, rate limiting, interactive API documentation (Swagger), and is containerized with Docker.
 
 ---
 
@@ -70,23 +70,23 @@ http://localhost:8080/h2-console
 ```
 Default Credentials:
 
-JDBC URL:jdbc:h2:mem:test2701
+-JDBC URL: 
+
+```bash
+jdbc:h2:mem:test2701
+```
 Username: sa
+
 Password: (leave blank)
 
 ---
 
 ⚙️ Configuration
+
 Environment Variables
+
 Create a .env file in the project root with:
-EXCHANGE_API_KEY=your_api_key_here
+
+-EXCHANGE_API_KEY=your_api_key_here
+
 This key is used to authenticate with the external exchange rate API - exchangerate.host
-
----
-
-Caching & Rate Limiting
-Caching:
-The application caches exchange rate lookups to improve performance.
-
-Rate Limiting:
-An IP-based rate limiter is applied to prevent abuse of the endpoints.
