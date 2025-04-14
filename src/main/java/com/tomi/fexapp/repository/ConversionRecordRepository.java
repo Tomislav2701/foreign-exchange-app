@@ -4,6 +4,8 @@ import com.tomi.fexapp.entity.ConversionRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface ConversionRecordRepository extends JpaRepository<ConversionRecord, Long>, 
+import java.util.UUID;
+
+public interface ConversionRecordRepository extends JpaRepository<ConversionRecord, UUID>,
         JpaSpecificationExecutor<ConversionRecord> {
 }

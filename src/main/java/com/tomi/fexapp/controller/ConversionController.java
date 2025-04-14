@@ -1,12 +1,13 @@
 package com.tomi.fexapp.controller;
 
+import com.tomi.fexapp.dto.ConversionRequestDTO;
 import com.tomi.fexapp.entity.ConversionRecord;
 import com.tomi.fexapp.service.ConversionService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-import java.math.BigDecimal;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/convert")
 public class ConversionController {
 
     private final ConversionService conversionService;
@@ -15,10 +16,12 @@ public class ConversionController {
         this.conversionService = conversionService;
     }
 
-    @PostMapping("/convert")
-    public ConversionRecord convertCurrency(@RequestParam BigDecimal amount,
-                                            @RequestParam String from,
-                                            @RequestParam String to) {
-        return conversionService.convertCurrency(amount, from, to);
+    @PostMapping
+    public ConversionRecord convertCurrency(@Valid @ModelAttribute ConversionRequestDTO conversionRequestDTO) {
+        return conversionService.convertCurrency(
+            conversionRequestDTO.getAmount(),
+            conversionRequestDTO.getFrom(),
+            conversionRequestDTO.getTo()
+        );
     }
 }

@@ -1,38 +1,29 @@
 package com.tomi.fexapp.controller;
 
+import com.tomi.fexapp.dto.HistoryFilterDTO;
 import com.tomi.fexapp.entity.ConversionRecord;
-import com.tomi.fexapp.repository.ConversionRecordRepository;
-import org.springframework.data.domain.*;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
-import java.time.*;
+import com.tomi.fexapp.service.HistoryService;
+
+import jakarta.validation.Valid;
+
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/history")
 public class HistoryController {
 
-    private final ConversionRecordRepository recordRepository;
+    private final HistoryService historyService;
 
-    public HistoryController(ConversionRecordRepository recordRepository) {
-        this.recordRepository = recordRepository;
+    public HistoryController(HistoryService historyService) {
+        this.historyService = historyService;
     }
 
-    @GetMapping("/history")
-    public Page<ConversionRecord> getHistory(
-            @RequestParam(required = false) String transactionId,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        if (transactionId != null) {
-            return recordRepository.findAll((root, query, cb) ->
-                    cb.equal(root.get("transactionId"), transactionId), PageRequest.of(page, size));
-        } else if (date != null) {
-            LocalDateTime start = date.atStartOfDay();
-            LocalDateTime end = date.plusDays(1).atStartOfDay();
-            return recordRepository.findAll((root, query, cb) ->
-                    cb.between(root.get("conversionTimestamp"), start, end), PageRequest.of(page, size));
-        }
-        return recordRepository.findAll(PageRequest.of(page, size));
+    @GetMapping
+    public Page<ConversionRecord> getHistory(@Valid @ModelAttribute HistoryFilterDTO filter) {
+        return historyService.getHistory(filter);
     }
 }

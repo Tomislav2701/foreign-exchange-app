@@ -1,55 +1,39 @@
 package com.tomi.fexapp.service;
 
+import com.tomi.fexapp.dto.ExchangeRateResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
 
 @Service
 public class ExchangeRateService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final Dotenv dotenv;
+    private final RestTemplate restTemplate;
+    private final String apiKey;
 
     public ExchangeRateService(Dotenv dotenv) {
-        this.dotenv = dotenv;
+        this.restTemplate = new RestTemplate();
+        this.apiKey = dotenv.get("EXCHANGE_API_KEY");
     }
 
     @Cacheable(value = "exchangeRates", key = "#fromCurrency + '-' + #toCurrency")
     public BigDecimal getExchangeRate(String fromCurrency, String toCurrency) {
-        String apiKey = dotenv.get("EXCHANGE_API_KEY");
-        String url = String.format(
-            "https://api.exchangerate.host/convert?from=%s&to=%s&amount=1&access_key=%s",
-            fromCurrency, toCurrency, apiKey
-        );
+        String url = UriComponentsBuilder.fromUriString("https://api.exchangerate.host/convert")
+                .queryParam("from", fromCurrency)
+                .queryParam("to", toCurrency)
+                .queryParam("amount", "1")
+                .queryParam("access_key", apiKey)
+                .toUriString();
+
         ExchangeRateResponse response = restTemplate.getForObject(url, ExchangeRateResponse.class);
         if (response != null && response.isSuccess()) {
             return response.getResult();
         } else {
             throw new RuntimeException("Failed to fetch exchange rate");
-        }
-    }
-
-    public static class ExchangeRateResponse {
-        private boolean success;
-        private BigDecimal result;
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public void setSuccess(boolean success) {
-            this.success = success;
-        }
-
-        public BigDecimal getResult() {
-            return result;
-        }
-
-        public void setResult(BigDecimal result) {
-            this.result = result;
         }
     }
 }
